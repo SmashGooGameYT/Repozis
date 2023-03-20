@@ -9,24 +9,27 @@ using UnityEngine.SceneManagement;
 public class TrigerEnterCave : MonoBehaviour
 {
     public Animator CaveWarning;
-    [SerializeField] Collider2D Player;
+    [SerializeField] public LayerMask Player;
 
-    private void OnTriggerEnter2D(Collider2D Player)
+
+    private void OnTriggerEnter2D(Collider2D  PlayerCol)
     {
-        CaveWarning.SetBool("PlayerEnter", true);
-
-
+            CaveWarning.SetBool("PlayerEnter", true);
     }
-    private void OnTriggerStay2D(Collider2D Player)
+    private void OnTriggerStay2D(Collider2D PlayerCol)
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            SceneManager.LoadScene(2);
-        }
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                SceneManager.LoadScene(2);
+            }
+
     }
     private void OnTriggerExit2D(Collider2D Player)
     {
+
         CaveWarning.SetBool("PlayerEnter", false);
 
     }
+
 }

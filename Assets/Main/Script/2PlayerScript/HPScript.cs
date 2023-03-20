@@ -21,8 +21,7 @@ public class HPScript : MonoBehaviour
     public void TakeDamage(int damage)
     {
         HPplayer -= damage;
-
-        // anim.SetTrigger("Hurt"); (ÑÄÅËÀÒÜ)
+        anim.SetTrigger("Herted");
 
         if (HPplayer < 0)
         {

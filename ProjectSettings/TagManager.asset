@@ -18,7 +18,7 @@ TagManager:
   - Ground
   - Player
   - EnemyLayer
-  - 
+  - LadderLayer
   - 
   - 
   - 
@@ -41,6 +41,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: BG
+    uniqueID: 2155298557
     locked: 0
   - name: BackGroundIMAGE
     uniqueID: 1460311163

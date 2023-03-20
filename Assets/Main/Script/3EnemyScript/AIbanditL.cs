@@ -16,15 +16,21 @@ public class AIbanditL : MonoBehaviour
 
     [SerializeField] private BoxCollider2D CombatZone;
     [SerializeField] public LayerMask PlayerLayer;
+    [SerializeField] Transform PlayerPos;
 
     public float RangePrepare = 2f;
-    private int _Damage = 12;
-     
+    private int _damage = 12;
+
 
 
     void Start()
     {
         HPnow = maxHP;
+    }
+
+    void Update()
+    {
+
     }
 
 
@@ -40,7 +46,6 @@ public class AIbanditL : MonoBehaviour
             Die();
         }
     }
-
     void Die()
     {
         //Анимация смерти
@@ -53,36 +58,26 @@ public class AIbanditL : MonoBehaviour
         this.enabled = false;
     }
 
+
     // part 2
 
-    /*
-    public void prepare()
+    public void InPlayerCombatZone()
     {
-        if (PlayerLayer)
-        {
-            animEnemy.SetBool("PlayerInCombatZone", true);
-        }
-        else if (PlayerLayer)
-        {
-            animEnemy.SetBool("PlayerInCombatZone", false);
-        }
+        animEnemy.SetBool("PlayerInCombatZone", true);
     }
-    */
-
-    void Attack()
+    public void NoPlayerCombatZone()
     {
-
-        Collider2D[] HitPlayer = Physics2D.OverlapBoxAll(CombatZone.bounds.center, CombatZone.bounds.size, PlayerLayer);
-        foreach (Collider2D Player in HitPlayer)
-        {
-            Player.GetComponent<HPScript>().TakeDamage(_Damage);
-        }
+        animEnemy.SetBool("PlayerInCombatZone", false);
     }
 
-    //void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawCube(CombatZone.bounds.center, CombatZone.bounds.size);
-    //}
 
+
+    void DamageAttack()
+    {
+        Collider2D[] HitPlayer = Physics2D.OverlapCircleAll(PlayerPos.position, RangePrepare, PlayerLayer);
+        foreach (Collider2D PlayerHP in HitPlayer)
+        {
+            PlayerHP.GetComponent<HPScript>().TakeDamage(_damage);
+        }
+    }
 }
