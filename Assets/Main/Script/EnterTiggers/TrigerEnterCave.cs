@@ -9,27 +9,32 @@ using UnityEngine.SceneManagement;
 public class TrigerEnterCave : MonoBehaviour
 {
     public Animator CaveWarning;
-    [SerializeField] public LayerMask Player;
 
 
     private void OnTriggerEnter2D(Collider2D  PlayerCol)
     {
+        if (PlayerCol.tag == "Player")
+        {
             CaveWarning.SetBool("PlayerEnter", true);
+        }
     }
     private void OnTriggerStay2D(Collider2D PlayerCol)
     {
-
+        if (PlayerCol.tag == "Player")
+        {
             if (Input.GetKeyDown(KeyCode.F))
             {
                 SceneManager.LoadScene(2);
             }
+        }
+
 
     }
-    private void OnTriggerExit2D(Collider2D Player)
+    private void OnTriggerExit2D(Collider2D PlayerCol)
     {
-
-        CaveWarning.SetBool("PlayerEnter", false);
-
+        if (PlayerCol.tag == "Player")
+        {
+            CaveWarning.SetBool("PlayerEnter", false);
+        }
     }
-
 }

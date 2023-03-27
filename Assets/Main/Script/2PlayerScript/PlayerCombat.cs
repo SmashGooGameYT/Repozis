@@ -15,16 +15,11 @@ public class PlayerCombat : MonoBehaviour
     public Rigidbody2D rb;
 
 
-
-
-
-    // Start is called before the first frame update
     void Start()
     {
         animCombat = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         LightAttack();

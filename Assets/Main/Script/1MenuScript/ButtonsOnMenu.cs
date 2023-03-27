@@ -10,9 +10,9 @@ public class ButtonsOnMenu : MonoBehaviour
     {
         SceneManager.LoadScene(1);
     }
+
     public void EXIT()
     {
         Application.Quit();
     }
-
 }

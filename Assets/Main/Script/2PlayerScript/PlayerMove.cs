@@ -20,8 +20,6 @@ public class PlayerMove : MonoBehaviour
     // Переменные для прыжка
     public bool onGround = true;
     public LayerMask Ground;
-    public bool onProps = true;
-    public LayerMask Props;
     public Transform GroundCheck;
     public float checkRadius = 0.5f;
 
@@ -40,12 +38,13 @@ public class PlayerMove : MonoBehaviour
     {
         Walk();
         JumpGround();
-        JumpProps();
         PlyerSits();
         PlayerSliding();
         CheckGround();
         Flip();
-    
+
+        IgnoreEnemyLayer();
+
         Checkingladder();
         LaddersMech();
         ladderUpDown();
@@ -76,31 +75,41 @@ public class PlayerMove : MonoBehaviour
             transform.localScale *= new Vector2(-1, 1);
             FaceRight = !FaceRight;
         } 
-    }
+    }   
 
     // Условие прыжка, если игрок стоит на земле
     void JumpGround()
     {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            Physics2D.IgnoreLayerCollision(6, 10, true);
+            Invoke("IgnorePlatformOFF", 0.5f);
+        }
+
         if (Input.GetKeyDown(KeyCode.Space ) && onGround && !onLadders)
         {
             rb.velocity = new Vector2(rb.velocity.x, JumpForce);
         }
     }
-    // Условие прыжка, если игрок стоит на предмете
-    void JumpProps()
+
+    // Метод для спрыгивания с платформы путём отключения столкновения слоев
+    void IgnorePlatformOFF()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && onProps && !onLadders)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, JumpForce);
-        }
+        Physics2D.IgnoreLayerCollision(6, 10, false);
     }
+    // Игнорирование слоев противка
+    void IgnoreEnemyLayer()
+    {
+        Physics2D.IgnoreLayerCollision(10, 11, true);
+        Physics2D.IgnoreLayerCollision(11, 11, true);
+    }
+
 
     // Проверка на твердую поверхность под ногами
     void CheckGround()
     {
-        onProps = Physics2D.OverlapCircle(GroundCheck.position, checkRadius, Props);
         onGround = Physics2D.OverlapCircle(GroundCheck.position, checkRadius, Ground);
-        anim.SetBool("onGroundes", onGround || onProps);
+        anim.SetBool("onGroundes", onGround);
     }
 
     void PlyerSits()
@@ -125,11 +134,11 @@ public class PlayerMove : MonoBehaviour
 
     void PlayerSliding()
     {
-        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             anim.SetBool("Sliding", true);
         }
-        else if (Input.GetKeyUp(KeyCode.LeftAlt))
+        else if (Input.GetKey(KeyCode.LeftControl))
         {
             anim.SetBool("Sliding", false);
         }
@@ -159,7 +168,6 @@ public class PlayerMove : MonoBehaviour
     {
         checkedladder = Physics2D.OverlapPoint(Check_ladder.position, ladderlayer);
         bottoncheckedladder = Physics2D.OverlapPoint(botton_ladder.position, ladderlayer);
-
     }
     void LaddersMech()
     {
@@ -177,7 +185,7 @@ public class PlayerMove : MonoBehaviour
     void ladderUpDown()
     {
         MoveV.y = Input.GetAxisRaw("Vertical");
-        anim.SetFloat("moveY", MoveV.y);
+        anim.SetFloat("MoveY", MoveV.y);
     }
 
     public bool onLadders;
@@ -196,7 +204,7 @@ public class PlayerMove : MonoBehaviour
                 else if (Input.GetAxisRaw("Vertical") < 0) { onLadders = true; }
                 else if  (Input.GetKeyDown(KeyCode.Space) && rb.velocity.y == 0) { onLadders = false; }
             }
-            else if (checkedladder && !bottoncheckedladder)// ПОД ЛЕСТНИЦОЙ
+            else if (checkedladder && !bottoncheckedladder)// ПОД ЛЕСТНИЦЕЙ
             {
                 if (Input.GetAxisRaw("Vertical") > 0)      { onLadders = true; }
                 else if (Input.GetAxisRaw("Vertical") < 0) { onLadders = false; }
@@ -221,10 +229,9 @@ public class PlayerMove : MonoBehaviour
     void LedderCenter()
     {
         if (checkedladder) { ledderCenter = Physics2D.OverlapPoint(Check_ladder.position, ladderlayer).gameObject.transform.position.x; }
-        //if (checkedladder) { ledderCenter = Physics2D.OverlapPoint(Check_ladder.position, ladderlayer).GetComponent<BoxCollider2D>().bounds.center.x; }
         else if (bottoncheckedladder) { ledderCenter = Physics2D.OverlapPoint(botton_ladder.position, ladderlayer).GetComponent<BoxCollider2D>().bounds.center.x; }
-
         transform.position = new Vector2 (ledderCenter, transform.position.y);
     }
-
 }
+
+//  if (checkedladder) { ledderCenter = Physics2D.OverlapPoint(Check_ladder.position, ladderlayer).GetComponent<BoxCollider2D>().bounds.center.x; }     void LedderCenter() 2-3 

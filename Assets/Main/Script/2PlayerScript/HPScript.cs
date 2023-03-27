@@ -33,6 +33,7 @@ public class HPScript : MonoBehaviour
     {
         // анимация смерти (СДЕЛАТЬ)
 
+        // Затемнение (СДЕЛАТЬ)
 
         // возрат в главное меню
         SceneManager.LoadScene(0);

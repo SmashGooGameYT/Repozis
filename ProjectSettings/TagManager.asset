@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - HPprops
   layers:
   - Default
   - TransparentFX
@@ -12,7 +13,7 @@ TagManager:
   - BackGround
   - Water
   - UI
-  - 
+  - Platforms
   - BackGroundProps
   - Props
   - Ground

@@ -18,10 +18,9 @@ public class AIbanditL : MonoBehaviour
     [SerializeField] public LayerMask PlayerLayer;
     [SerializeField] Transform PlayerPos;
 
-    public float RangePrepare = 2f;
+    public Transform DamageZone;
+    public float RangePrepare = 0.5f;
     private int _damage = 12;
-
-
 
     void Start()
     {
@@ -51,8 +50,6 @@ public class AIbanditL : MonoBehaviour
         //Анимация смерти
         animEnemy.SetBool("Die?", true);
 
-        rb.freezeRotation = false;
-
         //Уничтожение
         GetComponent<Collider2D>().enabled = false;
         this.enabled = false;
@@ -60,7 +57,6 @@ public class AIbanditL : MonoBehaviour
 
 
     // part 2
-
     public void InPlayerCombatZone()
     {
         animEnemy.SetBool("PlayerInCombatZone", true);
@@ -70,8 +66,6 @@ public class AIbanditL : MonoBehaviour
         animEnemy.SetBool("PlayerInCombatZone", false);
     }
 
-
-
     void DamageAttack()
     {
         Collider2D[] HitPlayer = Physics2D.OverlapCircleAll(PlayerPos.position, RangePrepare, PlayerLayer);
@@ -79,5 +73,15 @@ public class AIbanditL : MonoBehaviour
         {
             PlayerHP.GetComponent<HPScript>().TakeDamage(_damage);
         }
+    }
+
+
+
+    void OnDrawGizmosSelected()
+    {
+        if (DamageZone == null)
+            return;
+
+        Gizmos.DrawWireSphere(DamageZone.position, RangePrepare);
     }
 }
