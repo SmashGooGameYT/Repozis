@@ -51,8 +51,8 @@ public class AIbanditL : MonoBehaviour
         animEnemy.SetBool("Die?", true);
 
         //”ничтожение
-        GetComponent<Collider2D>().enabled = false;
-        this.enabled = false;
+
+        Destroy(gameObject, 10);
     }
 
 

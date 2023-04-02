@@ -14,8 +14,15 @@ public class PlayerMove : MonoBehaviour
     public float speed;
     public float JumpForce;
     public bool FaceRight = true;
-    public float CrounchSpeed = 1;
+
+
+    // Переменные для приседа
+    public float CrounchSpeed = 1f;
     public float ForceSlide = 100;
+    public Transform TopCheck;
+    public float TopCheckRadius;
+    public LayerMask Roof;
+    private bool JumpLock = false;
 
     // Переменные для прыжка
     public bool onGround = true;
@@ -31,6 +38,11 @@ public class PlayerMove : MonoBehaviour
         anim= GetComponent<Animator>(); // Присваеваем anim к компоненту Animator
         sr = GetComponent<SpriteRenderer>(); // Присваеваем sr к компоненту SpriteRender
 
+        TopCheckRadius = TopCheck.GetComponent<CircleCollider2D>().radius; // Присваеваем радиус объекта TopCheck к значению радиуса
+
+        WallcheckRadiusDown = WallCheckDown.GetComponent<CircleCollider2D>().radius;
+        gravityDef = rb.gravityScale;
+
     }
 
     // Объявление переменных для их обработки каждый кадр игры
@@ -40,7 +52,6 @@ public class PlayerMove : MonoBehaviour
         JumpGround();
         PlyerSits();
         PlayerSliding();
-        CheckGround();
         Flip();
 
         IgnoreEnemyLayer();
@@ -50,21 +61,34 @@ public class PlayerMove : MonoBehaviour
         ladderUpDown();
         LADDERS();
         CurrectLadder();
+
+        MoveOnWall();
+        WallJump();
+    }
+
+    private void FixedUpdate()
+    {
+        ChikingWall();
+        CheckingLedge();
+        CheckGround();
     }
 
     // Условие для передвежения
     void Walk()
     {
-        MoveV.x = Input.GetAxisRaw("Horizontal");
-        if  (!onLadders)
+        if (!BlockMoveX) 
         {
-            rb.velocity = new Vector2(MoveV.x * speed, rb.velocity.y);
+            MoveV.x = Input.GetAxisRaw("Horizontal");
+            if (!onLadders)
+            {
+                rb.velocity = new Vector2(MoveV.x * speed, rb.velocity.y);
+            }
+            else if (onLadders)
+            {
+                rb.velocity = Vector2.zero;
+            }
+            anim.SetFloat("MoveX", Mathf.Abs(MoveV.x));
         }
-        else if (onLadders)
-        {
-            rb.velocity = Vector2.zero;
-        }
-        anim.SetFloat("MoveX", Mathf.Abs(MoveV.x));
     }
 
     // Условие для поворота модельки персонажа
@@ -86,7 +110,7 @@ public class PlayerMove : MonoBehaviour
             Invoke("IgnorePlatformOFF", 0.5f);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space ) && onGround && !onLadders)
+        if (Input.GetKeyDown(KeyCode.Space ) && onGround && !onLadders && !JumpLock)
         {
             rb.velocity = new Vector2(rb.velocity.x, JumpForce);
         }
@@ -116,24 +140,26 @@ public class PlayerMove : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
+            JumpLock = true;
             rb.velocity = new Vector2(MoveV.x * CrounchSpeed, rb.velocity.y);
             anim.SetBool("Sits", true);
         }
-        if (Input.GetKey(KeyCode.LeftControl)) 
+        else if (Input.GetKeyUp(KeyCode.LeftControl) && Physics2D.OverlapCircle(TopCheck.position, TopCheckRadius, Roof))
         {
+            JumpLock = true;
             rb.velocity = new Vector2(MoveV.x * CrounchSpeed, rb.velocity.y);
             anim.SetBool("Sits", true);
         }
-
         else if (Input.GetKeyUp(KeyCode.LeftControl))
         {
+            JumpLock = false;
             rb.velocity = new Vector2(MoveV.x * CrounchSpeed, rb.velocity.y);
             anim.SetBool("Sits", false);
         }
     }
 
     void PlayerSliding()
-    {
+    {   
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             anim.SetBool("Sliding", true);
@@ -144,6 +170,129 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    // Ползанье по стенам
+
+    public bool onWall = true;
+    public bool onWallUp;
+    public bool onWallDown;
+    public LayerMask Wall;
+    public Transform WallCheckUp;
+    public Transform WallCheckDown;
+    public float WallcheckRayDistance = 1f;
+    public float WallcheckRadiusDown;
+    public float UpDownSpeed = 2f;
+    public float SlideWallSpeed = 0f;
+    private float gravityDef;
+    private bool BlockMoveX;
+    public float JumpWallTime = 0.5f;
+    private float TimerJumpWall;
+    public Vector2 JumpAngle = new Vector2(3.5f, 10);
+    public bool onLedge;
+    public float ledgeRay = 0.5f;
+    public float offsetY;
+
+    void ChikingWall()
+    {
+        onWallUp = Physics2D.Raycast(WallCheckUp.position, new Vector2(transform.localScale.x, 0), WallcheckRayDistance, Wall);
+        onWallDown = Physics2D.OverlapCircle(WallCheckDown.position, WallcheckRadiusDown, Wall);
+        onWall = onWallUp && onWallDown;
+        anim.SetBool("OnWall", onWall);
+    }
+
+    void CheckingLedge()
+    {
+        if (onWallUp)
+        {
+            onLedge = !Physics2D.Raycast
+            (
+            new Vector2(WallCheckUp.position.x, WallCheckUp.position.y + ledgeRay),
+            new Vector2(transform.localScale.x, 0),
+            WallcheckRayDistance,
+            Wall
+            );
+        }
+        else { onLedge = false; }
+
+        if (onLedge)
+        {
+            correctLedge();
+        }
+    }
+
+    void correctLedge()
+    {
+        offsetY = Physics2D.Raycast
+        (
+        new Vector2(WallCheckUp.position.x + WallcheckRayDistance * transform.localScale.x, WallCheckUp.position.y + ledgeRay),
+        Vector2.down,
+        ledgeRay,
+        Ground
+        ).
+        distance;
+    }
+
+
+    void MoveOnWall()
+    {
+        if (onWall && !onGround)
+        {
+            MoveV.y = Input.GetAxisRaw("Vertical");
+            anim.SetFloat("UpDown", MoveV.y);
+
+            anim.StopPlayback();
+            anim.Play("UpDown");
+
+            if  (!BlockMoveX) 
+            {
+                if (MoveV.y == 0)
+                {
+                    rb.gravityScale = 0;
+                    rb.velocity = new Vector2(0, SlideWallSpeed);
+                }
+            }
+            if (MoveV.y > 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, MoveV.y * UpDownSpeed / 2);
+            }
+            else if (MoveV.y < 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, MoveV.y * UpDownSpeed);
+            }
+        }
+        else if (!onGround && !onWall) 
+        {
+            rb.gravityScale = gravityDef;
+        }
+    }
+
+    void WallJump()
+    {
+        if (onWall && !onGround && Input.GetKeyDown(KeyCode.Space))
+        {
+            BlockMoveX = true;
+
+            MoveV.x = 0;
+
+            anim.StopPlayback();
+
+            transform.localScale *= new Vector2(-1, 1);
+            FaceRight = !FaceRight;
+
+            rb.gravityScale = gravityDef;
+            rb.velocity = new Vector2(0, 0);
+
+            rb.velocity = new Vector2(transform.localScale.x * JumpAngle.x, JumpAngle.y);
+        }
+        if (BlockMoveX && (TimerJumpWall += Time.deltaTime) >= JumpWallTime)
+        {
+            if (onWall || onGround || Input.GetAxisRaw("Horizontal") != 0)
+            {
+                BlockMoveX = false;
+                TimerJumpWall = 0;
+            }
+        }
+
+    }
 
     // Лестница
 
@@ -162,6 +311,23 @@ public class PlayerMove : MonoBehaviour
         Gizmos.DrawSphere(Check_ladder.position, ladder_Radius);
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere(botton_ladder.position, ladder_Radius);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawLine(WallCheckUp.position, new Vector2(WallCheckUp.position.x + WallcheckRayDistance * transform.localScale.x, WallCheckUp.position.y));
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine 
+            (
+            new Vector2(WallCheckUp.position.x, WallCheckUp.position.y + ledgeRay),
+            new Vector2(WallCheckUp.position.x + WallcheckRayDistance * transform.localScale.x, WallCheckUp.position.y + ledgeRay)
+            );
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine
+            (
+                new Vector2(WallCheckUp.position.x + WallcheckRayDistance * transform.localScale.x, WallCheckUp.position.y + ledgeRay),
+                new Vector2(WallCheckUp.position.x + WallcheckRayDistance * transform.localScale.x, WallCheckUp.position.y)
+            );
     }
 
     void Checkingladder()
