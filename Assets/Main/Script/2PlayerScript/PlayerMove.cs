@@ -17,7 +17,7 @@ public class PlayerMove : MonoBehaviour
 
 
     // Переменные для приседа
-    public float CrounchSpeed = 1f;
+    public float CrounchSpeed = 2f;
     public float ForceSlide = 100;
     public Transform TopCheck;
     public float TopCheckRadius;
@@ -71,12 +71,13 @@ public class PlayerMove : MonoBehaviour
         ChikingWall();
         CheckingLedge();
         CheckGround();
+        ledgeGO();
     }
 
     // Условие для передвежения
     void Walk()
     {
-        if (!BlockMoveX) 
+        if (!BlockMoveXY) 
         {
             MoveV.x = Input.GetAxisRaw("Horizontal");
             if (!onLadders)
@@ -183,13 +184,16 @@ public class PlayerMove : MonoBehaviour
     public float UpDownSpeed = 2f;
     public float SlideWallSpeed = 0f;
     private float gravityDef;
-    private bool BlockMoveX;
+    private bool BlockMoveXY;
+    private bool BlockMoveXYledge;
     public float JumpWallTime = 0.5f;
     private float TimerJumpWall;
-    public Vector2 JumpAngle = new Vector2(3.5f, 10);
+    public Vector2 JumpAngle = new Vector2(3.5f, 3);
     public bool onLedge;
     public float ledgeRay = 0.5f;
     public float offsetY;
+    private float minCor = 0.01f;
+    public Transform FinPosC;
 
     void ChikingWall()
     {
@@ -213,8 +217,12 @@ public class PlayerMove : MonoBehaviour
         }
         else { onLedge = false; }
 
-        if (onLedge)
+        anim.SetBool("onLedge", onLedge);
+
+        if (onLedge && Input.GetAxisRaw("Vertical") != -1)
         {
+            rb.gravityScale = 0;
+            rb.velocity = new Vector2(0,0);
             correctLedge();
         }
     }
@@ -229,6 +237,26 @@ public class PlayerMove : MonoBehaviour
         Ground
         ).
         distance;
+
+        if (offsetY > minCor * 1.5f)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y - offsetY + minCor, transform.position.z);
+        }
+    }
+
+    void ledgeGO()
+    {
+        BlockMoveXYledge = true;
+        if (onLedge && Input.GetKeyDown(KeyCode.W))
+        {
+            anim.Play("OnWallPlayerClimb");
+        }
+    }
+
+    void finishledge()
+    {
+        transform.position = new Vector3(FinPosC.position.x, FinPosC.position.y, FinPosC.position.z);
+        BlockMoveXYledge = false;
     }
 
 
@@ -239,24 +267,22 @@ public class PlayerMove : MonoBehaviour
             MoveV.y = Input.GetAxisRaw("Vertical");
             anim.SetFloat("UpDown", MoveV.y);
 
-            anim.StopPlayback();
-            anim.Play("UpDown");
-
-            if  (!BlockMoveX) 
+            if  (!BlockMoveXY && MoveV.y == 0) 
             {
-                if (MoveV.y == 0)
-                {
                     rb.gravityScale = 0;
                     rb.velocity = new Vector2(0, SlideWallSpeed);
+            }
+
+            if (!BlockMoveXYledge)
+            {
+                if (MoveV.y > 0)
+                {
+                    rb.velocity = new Vector2(rb.velocity.x, MoveV.y * UpDownSpeed / 2);
                 }
-            }
-            if (MoveV.y > 0)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, MoveV.y * UpDownSpeed / 2);
-            }
-            else if (MoveV.y < 0)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, MoveV.y * UpDownSpeed);
+                else if (MoveV.y < 0)
+                {
+                    rb.velocity = new Vector2(rb.velocity.x, MoveV.y * UpDownSpeed);
+                }
             }
         }
         else if (!onGround && !onWall) 
@@ -269,7 +295,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (onWall && !onGround && Input.GetKeyDown(KeyCode.Space))
         {
-            BlockMoveX = true;
+            BlockMoveXY = true;
 
             MoveV.x = 0;
 
@@ -283,11 +309,11 @@ public class PlayerMove : MonoBehaviour
 
             rb.velocity = new Vector2(transform.localScale.x * JumpAngle.x, JumpAngle.y);
         }
-        if (BlockMoveX && (TimerJumpWall += Time.deltaTime) >= JumpWallTime)
+        if (BlockMoveXY && (TimerJumpWall += Time.deltaTime) >= JumpWallTime)
         {
             if (onWall || onGround || Input.GetAxisRaw("Horizontal") != 0)
             {
-                BlockMoveX = false;
+                BlockMoveXY = false;
                 TimerJumpWall = 0;
             }
         }
