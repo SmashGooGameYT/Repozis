@@ -34,8 +34,8 @@ public class PlayerMove : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rb= GetComponent<Rigidbody2D>(); // Присваеваем rb к компоненту RigidBody2D
-        anim= GetComponent<Animator>(); // Присваеваем anim к компоненту Animator
+        rb = GetComponent<Rigidbody2D>(); // Присваеваем rb к компоненту RigidBody2D
+        anim = GetComponent<Animator>(); // Присваеваем anim к компоненту Animator
         sr = GetComponent<SpriteRenderer>(); // Присваеваем sr к компоненту SpriteRender
 
         TopCheckRadius = TopCheck.GetComponent<CircleCollider2D>().radius; // Присваеваем радиус объекта TopCheck к значению радиуса
@@ -172,7 +172,6 @@ public class PlayerMove : MonoBehaviour
     }
 
     // Ползанье по стенам
-
     public bool onWall = true;
     public bool onWallUp;
     public bool onWallDown;
@@ -249,6 +248,7 @@ public class PlayerMove : MonoBehaviour
         BlockMoveXYledge = true;
         if (onLedge && Input.GetKeyDown(KeyCode.W))
         {
+            finishledge();
             anim.Play("OnWallPlayerClimb");
         }
     }
@@ -317,7 +317,6 @@ public class PlayerMove : MonoBehaviour
                 TimerJumpWall = 0;
             }
         }
-
     }
 
     // Лестница
