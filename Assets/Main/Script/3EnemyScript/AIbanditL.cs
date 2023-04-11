@@ -6,11 +6,20 @@ using UnityEngine.Experimental.GlobalIllumination;
 
 public class AIbanditL : MonoBehaviour
 {
+    private Collider2D c2;
     public Animator animEnemy;
     private Rigidbody2D rb;
 
     public int maxHP = 100;
     int HPnow;
+
+    public bool FaceRight = true;
+    public Vector2 MoveV;
+    public float speed = 5f;
+
+    [SerializeField] Transform Player;
+    [SerializeField] float AgrRange;
+
 
     // part 2
 
@@ -24,14 +33,38 @@ public class AIbanditL : MonoBehaviour
 
     void Start()
     {
+        rb= GetComponent<Rigidbody2D>();
+        c2 = GetComponent<Collider2D>();
         HPnow = maxHP;
     }
 
     void Update()
     {
+        walk();
+        Flip();
 
     }
 
+    void walk()
+    {
+        rb.velocity = new Vector2(MoveV.x * speed, rb.velocity.y);
+        animEnemy.SetFloat("Running", Mathf.Abs(MoveV.x));
+    }
+
+
+    void Flip()
+    {
+        if ((MoveV.x < 0 && !FaceRight) || (MoveV.x > 0 && FaceRight))
+        {
+            transform.localScale *= new Vector2(-1, 1);
+            FaceRight = !FaceRight;
+        }
+    }
+
+
+
+
+    // Получение урона  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
     public void TakeDamage(int damage)
     {
@@ -47,19 +80,22 @@ public class AIbanditL : MonoBehaviour
     }
     void Die()
     {
+        c2.enabled= false;
+        rb.isKinematic = true;
+
         //Анимация смерти
         animEnemy.SetBool("Die?", true);
 
         //Уничтожение
-
-        Destroy(gameObject, 10);
+        Destroy(gameObject, 5);
     }
 
+    // Всё что связанно с атакой снизу. // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-    // part 2
     public void InPlayerCombatZone()
     {
         animEnemy.SetBool("PlayerInCombatZone", true);
+        rb.velocity = Vector2.zero;
     }
     public void NoPlayerCombatZone()
     {
@@ -76,6 +112,7 @@ public class AIbanditL : MonoBehaviour
     }
 
 
+    // Gizmo // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
     void OnDrawGizmosSelected()
     {

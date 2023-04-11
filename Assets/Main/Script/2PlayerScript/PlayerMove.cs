@@ -30,7 +30,6 @@ public class PlayerMove : MonoBehaviour
     public Transform GroundCheck;
     public float checkRadius = 0.5f;
 
-
     // Start is called before the first frame update
     void Start()
     {

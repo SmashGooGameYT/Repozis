@@ -7,7 +7,8 @@ public class PlayerCombat : MonoBehaviour
     public Animator animCombat;
     private int LightDamage = 12;
     private int RunDamage = 18;
-    private int HeavyAttack = 35;
+    private int HeavyAttack = 25;
+    private int time = 0;
 
     public Transform DamageZone;
     public LayerMask EnemyLayer;
@@ -24,6 +25,12 @@ public class PlayerCombat : MonoBehaviour
     {
         LightAttack();
         RunAttack();
+        HeavyAtack();
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            time++;
+        }
     }
 
 
@@ -52,6 +59,18 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    void HeavyAtack()
+    {
+        if (Input.GetKeyUp(KeyCode.Mouse0) && time > 0.5)
+        {
+            animCombat.SetTrigger("HeavyA");
+        }
+        else 
+        {
+            animCombat.SetBool("HeavyA", false);
+        }
+    }
+
 
     // Нанесения легкого урона противнику
     void LHit()
@@ -72,7 +91,14 @@ public class PlayerCombat : MonoBehaviour
             enemy.GetComponent<AIbanditL>().TakeDamage(RunDamage);
         }
     }
-
+    void HHit()
+    {
+        Collider2D[] HitEnemies = Physics2D.OverlapCircleAll(DamageZone.position, Range, EnemyLayer);
+        foreach (Collider2D enemy in HitEnemies)
+        {
+            enemy.GetComponent<AIbanditL>().TakeDamage(HeavyAttack);
+        }
+    }
 
 
 
