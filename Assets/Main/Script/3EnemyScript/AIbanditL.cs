@@ -44,7 +44,6 @@ public class AIbanditL : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         c2 = GetComponent<Collider2D>();
 
-        HPbar = GetComponent<Image>();
         HPnow = maxHP;
 
 

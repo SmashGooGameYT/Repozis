@@ -106,14 +106,26 @@ public class PlayerCombat : MonoBehaviour
 
     public void RangeHit()
     {
+        //Instantiate(Slash, startPos.position, Quaternion.identity);
+        float Rotate = 0;
+        bool Looking = GetComponent<PlayerMove>().FaceRight;
+        if (Looking)
+        {
+            Rotate = 0;
+        }
+        else
+        {
+            Rotate = 180;
+        }
+
         Instantiate(Slash, startPos.position, Quaternion.identity);
+
         Collider2D[] HitEnemies = Physics2D.OverlapCircleAll(DamageZone.position, Range, EnemyLayer);
         foreach (Collider2D enemy in HitEnemies)
         {
             enemy.GetComponent<AIbanditL>().TakeDamage(RangeAttack);
         }
     }
-
 
     // Отрисовка зоны атаки
     void OnDrawGizmosSelected()

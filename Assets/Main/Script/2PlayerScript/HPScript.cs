@@ -20,7 +20,6 @@ public class HPScript : MonoBehaviour
 
     private void Start()
     {
-        HPbar = GetComponent<Image>();
         HP = maxHP;
 
         rb = GetComponent<Rigidbody2D>();
