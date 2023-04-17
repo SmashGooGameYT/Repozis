@@ -1,29 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class AIbanditL : MonoBehaviour
 {
-    private Collider2D c2;
     public Animator animEnemy;
+    private Collider2D c2;
     private Rigidbody2D rb;
 
-    public int maxHP = 100;
-    int HPnow;
+    [SerializeField] Image HPbar;
+    private float maxHP = 0.5f;
+    float HPnow;
 
     public bool FaceRight = true;
     public Vector2 MoveV;
     public float speed = 5f;
+    float SlowSpeed = 1;
 
     [SerializeField] Transform Player;
     [SerializeField] float AgrRange;
 
-
     // part 2
 
-    [SerializeField] private BoxCollider2D CombatZone;
+    [SerializeField] private BoxCollider2D CombatZone; // Зона подготовки атаки
+    [SerializeField] private BoxCollider2D DangerPlayer; // Зона приследования
     [SerializeField] public LayerMask PlayerLayer;
     [SerializeField] Transform PlayerPos;
 
@@ -31,24 +34,54 @@ public class AIbanditL : MonoBehaviour
     public float RangePrepare = 0.5f;
     private int _damage = 12;
 
+    // Патруль
+    public Transform[] spots;
+    public float startWait;
+    private float wait;
+
     void Start()
     {
-        rb= GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody2D>();
         c2 = GetComponent<Collider2D>();
+
+        HPbar = GetComponent<Image>();
         HPnow = maxHP;
+
+
+
     }
 
     void Update()
     {
         walk();
+        SlowW();
         Flip();
+
+
+
+        HPbar.fillAmount = HPnow / maxHP;
+
 
     }
 
-    void walk()
+    public void walk()
     {
-        rb.velocity = new Vector2(MoveV.x * speed, rb.velocity.y);
-        animEnemy.SetFloat("Running", Mathf.Abs(MoveV.x));
+        if (DangerPlayer.tag != "Player") 
+        {
+            rb.velocity = new Vector2(MoveV.x * speed, rb.velocity.y);
+            animEnemy.SetFloat("Running", Mathf.Abs(MoveV.x));
+
+        }
+    }
+
+    public void SlowW()
+    {
+        if (CombatZone.tag == "Player")
+        {
+            rb.velocity = new Vector2(MoveV.x * SlowSpeed, rb.velocity.y);
+            animEnemy.SetBool("PlayerInCombatZone", true);
+
+        }
     }
 
 
@@ -63,10 +96,30 @@ public class AIbanditL : MonoBehaviour
 
 
 
+    // Востоновление // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
+    public void GoHome()
+    {
+
+    }
+
+
+
+
+    public void HP()
+    {
+        HPnow = HPnow;
+    }
+
+    public void HPreset()
+    {
+        HPnow = maxHP;
+    }
+
 
     // Получение урона  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         HPnow -= damage;
 
@@ -80,7 +133,7 @@ public class AIbanditL : MonoBehaviour
     }
     void Die()
     {
-        c2.enabled= false;
+        c2.enabled = false;
         rb.isKinematic = true;
 
         //Анимация смерти
@@ -112,7 +165,7 @@ public class AIbanditL : MonoBehaviour
     }
 
 
-    // Gizmo // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+    // Gizmos // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
     void OnDrawGizmosSelected()
     {

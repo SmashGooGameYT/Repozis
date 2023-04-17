@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - HPprops
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -61,11 +62,11 @@ TagManager:
   - name: Props
     uniqueID: 360315579
     locked: 0
-  - name: Player
-    uniqueID: 2832226313
-    locked: 0
   - name: Enemy
     uniqueID: 871510371
+    locked: 0
+  - name: Player
+    uniqueID: 2832226313
     locked: 0
   - name: ForwardProps
     uniqueID: 592047467

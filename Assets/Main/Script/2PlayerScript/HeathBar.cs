@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class HeathBar : MonoBehaviour
 {
-    Image HPbar;
-    public float maxHP = 100f;
-    public float HP;
+    public Image HPbar;
+    public int maxHP = 1;
+    public int HP;
 
     void Start()
     {

@@ -2,28 +2,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class HPScript : MonoBehaviour
 {
 
-    private Animator anim;
+    public Animator anim;
 
-    [SerializeField] private int HPplayer = 100;
-    int PlayerHPnow;
+    public Image HPbar;
+    public int maxHP = 1;
+    public int HP;
+
+
+    private Collider2D c2;
+    private Rigidbody2D rb;
 
     private void Start()
     {
-        PlayerHPnow = HPplayer;
+        HPbar = GetComponent<Image>();
+        HP = maxHP;
+
+        rb = GetComponent<Rigidbody2D>();
+        c2 = GetComponent<Collider2D>();
+    }
+
+    void Update()
+    {
+        HPbar.fillAmount = HP / maxHP;
     }
 
 
     public void TakeDamage(int damage)
     {
-        HPplayer -= damage;
+        HP -= damage;
         anim.SetTrigger("Herted");
 
-        if (HPplayer < 0)
+        if (HP < 0)
         {
             Die();
         }
@@ -32,6 +47,9 @@ public class HPScript : MonoBehaviour
     private void Die()
     {
         // анимация смерти (СДЕЛАТЬ)
+        anim.SetBool("HP0", true);
+        c2.enabled = false;
+       
 
         // Затемнение (СДЕЛАТЬ)
 

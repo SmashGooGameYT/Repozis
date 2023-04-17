@@ -5,15 +5,19 @@ using UnityEngine;
 public class PlayerCombat : MonoBehaviour
 {
     public Animator animCombat;
-    private int LightDamage = 12;
-    private int RunDamage = 18;
-    private int HeavyAttack = 25;
-    private int time = 0;
+    private float LightDamage = 0.12f;
+    private float RunDamage = 0.18f;
+    private float HeavyAttack = 0.20f;
+    private float time = 0;
 
     public Transform DamageZone;
     public LayerMask EnemyLayer;
     public float Range = 1f;
     public Rigidbody2D rb;
+
+    public GameObject Slash;
+    public Transform startPos;
+    public float RangeAttack = 0.05f;
 
 
     void Start()
@@ -100,7 +104,15 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-
+    public void RangeHit()
+    {
+        Instantiate(Slash, startPos.position, Quaternion.identity);
+        Collider2D[] HitEnemies = Physics2D.OverlapCircleAll(DamageZone.position, Range, EnemyLayer);
+        foreach (Collider2D enemy in HitEnemies)
+        {
+            enemy.GetComponent<AIbanditL>().TakeDamage(RangeAttack);
+        }
+    }
 
 
     // Отрисовка зоны атаки
