@@ -10,7 +10,7 @@ public class PlayerMove : MonoBehaviour
     SpriteRenderer sr;
 
     // Переменные для передвижения
-    public Vector2 MoveV;
+    private Vector2 MoveV;
     public float speed;
     public float JumpForce;
     public bool FaceRight = true;
@@ -63,6 +63,7 @@ public class PlayerMove : MonoBehaviour
 
         MoveOnWall();
         WallJump();
+        ledgeGO();
     }
 
     private void FixedUpdate()
@@ -70,7 +71,6 @@ public class PlayerMove : MonoBehaviour
         ChikingWall();
         CheckingLedge();
         CheckGround();
-        ledgeGO();
     }
 
     // Условие для передвежения
@@ -121,6 +121,7 @@ public class PlayerMove : MonoBehaviour
     {
         Physics2D.IgnoreLayerCollision(6, 10, false);
     }
+
     // Игнорирование слоев противка
     void IgnoreEnemyLayer()
     {

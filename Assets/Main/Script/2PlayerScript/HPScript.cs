@@ -11,8 +11,8 @@ public class HPScript : MonoBehaviour
     public Animator anim;
 
     public Image HPbar;
-    public int maxHP = 1;
-    public int HP;
+    public float maxHP = 1;
+    public float HP;
 
 
     private Collider2D c2;
@@ -31,8 +31,13 @@ public class HPScript : MonoBehaviour
         HPbar.fillAmount = HP / maxHP;
     }
 
+    public void healYourSelf()
+    {
+        HP = maxHP;
+    }
 
-    public void TakeDamage(int damage)
+
+    public void TakeDamage(float damage)
     {
         HP -= damage;
         anim.SetTrigger("Herted");
@@ -51,6 +56,7 @@ public class HPScript : MonoBehaviour
        
 
         // Затемнение (СДЕЛАТЬ)
+
 
         // возрат в главное меню
         SceneManager.LoadScene(0);

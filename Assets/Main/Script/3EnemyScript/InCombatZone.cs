@@ -5,17 +5,17 @@ using UnityEngine;
 public class InCombatZone : MonoBehaviour
 {
     
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D c)
     {
-        if (collision.tag == "Player")
+        if (c.tag == "Player")
         {
             GameObject.FindWithTag("Enemy").GetComponent<AIbanditL>().InPlayerCombatZone();
         }
     }
 
-    void OnTriggerExit2D(Collider2D collision)
+    void OnTriggerExit2D(Collider2D c)
     {
-        if (collision.tag == "Player")
+        if (c.tag != "Player")
         {
             GameObject.FindWithTag("Enemy").GetComponent<AIbanditL>().NoPlayerCombatZone();
         }

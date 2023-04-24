@@ -53,6 +53,9 @@ TagManager:
   - name: BackGridSortingLayer
     uniqueID: 2274180843
     locked: 0
+  - name: Light4
+    uniqueID: 2711130681
+    locked: 0
   - name: BackGroundProps
     uniqueID: 549931637
     locked: 0
@@ -62,14 +65,23 @@ TagManager:
   - name: Props
     uniqueID: 360315579
     locked: 0
+  - name: Light3
+    uniqueID: 1933597249
+    locked: 0
   - name: Enemy
     uniqueID: 871510371
     locked: 0
   - name: Player
     uniqueID: 2832226313
     locked: 0
+  - name: Light2
+    uniqueID: 354583979
+    locked: 0
   - name: ForwardProps
     uniqueID: 592047467
+    locked: 0
+  - name: Light1
+    uniqueID: 4058086663
     locked: 0
   - name: Ground2
     uniqueID: 304581255

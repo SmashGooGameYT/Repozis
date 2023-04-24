@@ -17,7 +17,7 @@ public class PlayerCombat : MonoBehaviour
 
     public GameObject Slash;
     public Transform startPos;
-    public float RangeAttack = 0.05f;
+    private float RangeAttack = 0.05f;
 
 
     void Start()
@@ -106,7 +106,6 @@ public class PlayerCombat : MonoBehaviour
 
     public void RangeHit()
     {
-        //Instantiate(Slash, startPos.position, Quaternion.identity);
         float Rotate = 0;
         bool Looking = GetComponent<PlayerMove>().FaceRight;
         if (Looking)
@@ -118,7 +117,7 @@ public class PlayerCombat : MonoBehaviour
             Rotate = 180;
         }
 
-        Instantiate(Slash, startPos.position, Quaternion.identity);
+        Instantiate(Slash, startPos.position, Quaternion.Euler(0f, 0+Rotate, 0f));
 
         Collider2D[] HitEnemies = Physics2D.OverlapCircleAll(DamageZone.position, Range, EnemyLayer);
         foreach (Collider2D enemy in HitEnemies)
