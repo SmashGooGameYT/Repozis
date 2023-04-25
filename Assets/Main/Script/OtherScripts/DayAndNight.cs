@@ -22,7 +22,7 @@ public class DayAndNight : MonoBehaviour
         volume = gameObject.GetComponent<Volume>();
     }
 
-    void FixedUpdate() // ‘икседјпдейт потому что более точно будет отображать врем€
+    void FixedUpdate() // ‘икседјпдейт потому что более точно будет считать врем€
     {
         CalcTime();
     }
@@ -47,10 +47,10 @@ public class DayAndNight : MonoBehaviour
         {
             hours = 0;
         }
-        ControlVolume(); // ћетод который отвечает за переключени€ дн€ и ночи
+        ControlVolume(); 
     }
 
-    public void ControlVolume() 
+    public void ControlVolume() // ћетод который отвечает за переключени€ дн€ и ночи
     {
         if (hours >= 18 && hours < 21) // темнеет в 17:00 и до 21:00
         {
