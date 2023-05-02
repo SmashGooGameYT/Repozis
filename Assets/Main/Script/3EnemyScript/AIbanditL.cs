@@ -17,16 +17,19 @@ public class AIbanditL : MonoBehaviour
     public float maxHP; // Максимальное здоровье
     float HPnow; // текущие здоровье
 
-    private Vector2 MoveV;
+    private Vector2 moveV;
     public bool FaceRight = true;
     public float speed = 4f;
-    float SlowSpeed = 1;
+    public float SlowSpeed = 1f;
 
-
+    // ИИ
     [SerializeField] Transform Player;
     [SerializeField] Transform Home;
     public float AgrRange;
     public float fightRange;
+    public float setSlowSpeedIfNearby = 3f;
+
+    public float Stop = 0.5f;
 
 
     [SerializeField] private BoxCollider2D CombatZone; // Зона подготовки атаки
@@ -50,52 +53,76 @@ public class AIbanditL : MonoBehaviour
 
         HPnow = maxHP;
 
-
-        // Как оставливать противника если совсем рядом игрок И он рядом с точкой дома
-        // B GoHome проблемка 
-        // И с разваратом проблема. Пробовал адаптировать FaceRight из скрипта игрока но не получилось, пока стоит полурабочий local.scale 
+        // И с разваратом проблема. Пробовал адаптировать FaceRight из скрипта игрока но не получилось
         // 
         //
-        // Всё работает в целом, противник правда не бъёт, но причина я так понимаю заключается в том что у него вечно состояние бега
     }
 
     void Update()
     {
         HPbar.fillAmount = HPnow / maxHP;
 
-        MoveV.x = transform.position.x; // Замена строки
+        moveV.x = transform.position.x; // Замена строки
 
-        
-        float wherePlayer = Vector2.Distance(transform.position, Player.position);
+
+        float wherePlayer = Vector2.Distance(transform.position, Player.position); // дистанция до игрока
+        float whereHome = Vector2.Distance(transform.position, Home.position); // дистанция до дома
+
         if (wherePlayer < AgrRange)
         {
-             GoPlayer();
+            GoPlayer();
+            if (wherePlayer < setSlowSpeedIfNearby)
+            {
+                rb.velocity = new Vector2(SlowSpeed, rb.velocity.y);
+                if (wherePlayer < fightRange)
+                {
+                    rb.velocity = new Vector2(0, 0);
+                }
+            }
         }
 
         else
         {
-            //StopFight();
+            StopFight();
+            if (whereHome < Stop)
+            {
+                rb.velocity = new Vector2(0, 0);
+                animEnemy.SetFloat("Running", 0);
+                HPreset();
+            }
         }
+
+        StopMove();
+        Flip();
     }
 
     void GoPlayer()
     {
-        if (Player.position.x < MoveV.x)
+        if (Player.position.x < moveV.x)
         {
             rb.velocity = new Vector2(-speed, rb.velocity.y);
         }
-
-        else if (Player.position.x > MoveV.x)
+        else if (Player.position.x > moveV.x)
         {
             rb.velocity = new Vector2(speed, rb.velocity.y);
         }
-        animEnemy.SetFloat("Running", Mathf.Abs(MoveV.x));
+        animEnemy.SetFloat("Running", Mathf.Abs(moveV.x));
     }
 
     void StopFight()
     {
-        rb.velocity = Vector2.zero;
         GoHome();
+    }
+
+
+    // проблема в координатах, как решить хз
+    void Flip()
+    {
+        if ((moveV.x > 0 && !FaceRight) || (moveV.x < 0 && FaceRight))
+        {
+            transform.localScale *= new Vector2(-1, 1);
+            FaceRight = !FaceRight;
+        }
     }
 
 
@@ -103,17 +130,16 @@ public class AIbanditL : MonoBehaviour
 
     void GoHome()
     {
-        if (MoveV.x > Home.position.x)
+        if (Home.position.x < moveV.x)
         {
-            rb.velocity = new Vector2(-speed, 0);
-            transform.localScale *= new Vector2(1, 1);
+            rb.velocity = new Vector2(-speed, rb.velocity.y);
         }
-        else if (MoveV.x < Home.position.x)
+
+        else if (Home.position.x > moveV.x)
         {
-            rb.velocity = new Vector2(speed, 0);
-            transform.localScale *= new Vector2(-1, 1);
+            rb.velocity = new Vector2(speed, rb.velocity.y);
         }
-        animEnemy.SetFloat("Running", Mathf.Abs(MoveV.x));
+        animEnemy.SetFloat("Running", Mathf.Abs(moveV.x));
 
         // Как сюда вписать то что если противник пришёл на точку он востановит ХП
     }
@@ -135,11 +161,13 @@ public class AIbanditL : MonoBehaviour
         if (HPnow <= 0)
         {
             Die();
+            rb.velocity = new Vector2(0, 0);
         }
     }
 
     void Die()
     {
+        // отключение колладера и переключение тела на кинетический тип
         c2.enabled = false;
         rb.isKinematic = true;
 
@@ -151,7 +179,13 @@ public class AIbanditL : MonoBehaviour
         Destroy(HPobject, 1);
     }
 
-
+    void StopMove()
+    {
+        if (HPnow <= 0)
+        {
+            rb.velocity = new Vector2(0, 0);
+        }
+    }
 
     // Всё что связанно с атакой снизу. // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
@@ -167,7 +201,6 @@ public class AIbanditL : MonoBehaviour
     public void InPlayerCombatZone()
     {
         animEnemy.SetBool("PlayerInCombatZone", true);
-        rb.velocity = new Vector2(SlowSpeed, rb.velocity.y);
     }
     public void NoPlayerCombatZone()
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Torch : MonoBehaviour
 {
     public GameObject torch;
-    public bool Presed = false;
+    bool presed = false;
 
     void Start()
     {
@@ -14,20 +14,21 @@ public class Torch : MonoBehaviour
 
     void Update()
     {
-        if (Presed == false)
+        if (presed == false)
         {
             if (Input.GetKeyDown(KeyCode.Q)) 
             {
                 torch.SetActive(true);
-                Presed= true;
+                presed = true;
             }
         }
-        else if ( Presed == true)
+
+        else if (presed == true)
         {
             if (Input.GetKeyDown(KeyCode.Q)) 
             { 
                 torch.SetActive(false);
-                Presed= false;
+                presed = false;
             }
         }
     }

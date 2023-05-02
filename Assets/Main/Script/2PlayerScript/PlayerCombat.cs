@@ -84,7 +84,6 @@ public class PlayerCombat : MonoBehaviour
         {
             enemy.GetComponent<AIbanditL>().TakeDamage(LightDamage);
         }
-
     }
     // Ќанесени€ урона с разбегу противнику
     void RHit()

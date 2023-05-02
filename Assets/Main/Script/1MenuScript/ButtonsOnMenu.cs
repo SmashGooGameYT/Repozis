@@ -20,9 +20,9 @@ public class ButtonsOnMenu : MonoBehaviour
 
     public void START()
     {
-        animFade.SetBool("Hide?", true);
         if (Input.GetKeyUp(KeyCode.Mouse0) && time > 1)
         {
+            animFade.SetBool("Hide?", true);
             SceneManager.LoadScene(1);
         }
     }

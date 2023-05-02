@@ -22,7 +22,7 @@ TagManager:
   - EnemyLayer
   - LadderLayer
   - Wall
-  - 
+  - Traps
   - 
   - 
   - 
@@ -88,6 +88,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 2151741847
+    locked: 0
+  - name: MoneyBagLayer
+    uniqueID: 1583468561
     locked: 0
   - name: UI
     uniqueID: 3752550725
