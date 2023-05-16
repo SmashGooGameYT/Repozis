@@ -18,7 +18,6 @@ public class AIbanditL : MonoBehaviour
     float HPnow; // текущие здоровье
 
     private Vector2 moveV;
-    public bool FaceRight = true;
     public float speed = 4f;
     public float SlowSpeed = 1f;
 
@@ -116,6 +115,8 @@ public class AIbanditL : MonoBehaviour
 
 
     // проблема в координатах, как решить хз
+    public bool FaceRight = true;
+
     void Flip()
     {
         if ((moveV.x > 0 && !FaceRight) || (moveV.x < 0 && FaceRight))
@@ -140,8 +141,6 @@ public class AIbanditL : MonoBehaviour
             rb.velocity = new Vector2(speed, rb.velocity.y);
         }
         animEnemy.SetFloat("Running", Mathf.Abs(moveV.x));
-
-        // Как сюда вписать то что если противник пришёл на точку он востановит ХП
     }
 
     public void HPreset()

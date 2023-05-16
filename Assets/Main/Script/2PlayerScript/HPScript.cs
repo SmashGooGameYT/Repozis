@@ -50,7 +50,6 @@ public class HPScript : MonoBehaviour
 
     private void Die()
     {
-        // анимация смерти (СДЕЛАТЬ)
         anim.SetBool("HP0", true);
         c2.enabled = false;
        

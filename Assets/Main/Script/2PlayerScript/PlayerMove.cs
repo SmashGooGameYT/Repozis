@@ -180,8 +180,8 @@ public class PlayerMove : MonoBehaviour
     public Transform WallCheckDown;
     public float WallcheckRayDistance = 1f;
     public float WallcheckRadiusDown;
-    public float UpDownSpeed = 2f;
-    public float SlideWallSpeed = 0f;
+    private float UpDownSpeed = 0.5f;
+    private float SlideWallSpeed = 1.5f;
     private float gravityDef;
     private bool BlockMoveXY;
     private bool BlockMoveXYledge;
@@ -246,7 +246,7 @@ public class PlayerMove : MonoBehaviour
     void ledgeGO()
     {
         BlockMoveXYledge = true;
-        if (onLedge && Input.GetKeyDown(KeyCode.W))
+        if (onLedge && Input.GetKeyDown(KeyCode.Space))
         {
             finishledge();
             anim.Play("OnWallPlayerClimb");
@@ -297,7 +297,7 @@ public class PlayerMove : MonoBehaviour
         {
             BlockMoveXY = true;
 
-            MoveV.x = 0;
+            MoveV.x = 0.5f;
 
             anim.StopPlayback();
 
