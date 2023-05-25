@@ -42,8 +42,7 @@ public class AIbanditL : MonoBehaviour
     public float RangePrepare = 0.5f;
     private float _damage = 0.12f;
 
-
-
+    bool huntPlayer = false;
 
     void Start()
     {
@@ -92,7 +91,6 @@ public class AIbanditL : MonoBehaviour
         }
 
         StopMove();
-        Flip();
     }
 
     void GoPlayer()
@@ -100,11 +98,22 @@ public class AIbanditL : MonoBehaviour
         if (Player.position.x < moveV.x)
         {
             rb.velocity = new Vector2(-speed, rb.velocity.y);
+            if (FaceRight)
+            {
+                transform.localScale *= new Vector2(-1, 1);
+                FaceRight = false;
+            }
         }
         else if (Player.position.x > moveV.x)
         {
             rb.velocity = new Vector2(speed, rb.velocity.y);
+            if (!FaceRight)
+            {
+                transform.localScale *= new Vector2(-1, 1);
+                FaceRight = true;
+            }
         }
+        huntPlayer = true;
         animEnemy.SetFloat("Running", Mathf.Abs(moveV.x));
     }
 
@@ -114,31 +123,31 @@ public class AIbanditL : MonoBehaviour
     }
 
 
-    // проблема в координатах, как решить хз
-    public bool FaceRight = true;
-
-    void Flip()
-    {
-        if ((moveV.x > 0 && !FaceRight) || (moveV.x < 0 && FaceRight))
-        {
-            transform.localScale *= new Vector2(-1, 1);
-            FaceRight = !FaceRight;
-        }
-    }
-
-
     // Востоновление // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
+    public bool FaceRight = true;
     void GoHome()
     {
         if (Home.position.x < moveV.x)
         {
             rb.velocity = new Vector2(-speed, rb.velocity.y);
+            if (huntPlayer == true)
+            {
+                transform.localScale *= new Vector2(-1, 1);
+                FaceRight = false;
+                huntPlayer = false;
+            }
         }
 
         else if (Home.position.x > moveV.x)
         {
             rb.velocity = new Vector2(speed, rb.velocity.y);
+            if (huntPlayer == true)
+            {
+                transform.localScale *= new Vector2(-1, 1);
+                FaceRight = true;
+                huntPlayer= false;
+            }
         }
         animEnemy.SetFloat("Running", Mathf.Abs(moveV.x));
     }

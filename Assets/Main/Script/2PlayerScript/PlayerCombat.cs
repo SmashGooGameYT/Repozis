@@ -56,10 +56,12 @@ public class PlayerCombat : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             animCombat.SetTrigger("RunAttack");
+            rb.velocity = new Vector2(0, 0);
         }
         else if (Input.GetKey(KeyCode.Mouse0))
         {
             animCombat.SetBool("RunAttack", false);
+            rb.velocity = new Vector2(0, 0);
         }
     }
 
